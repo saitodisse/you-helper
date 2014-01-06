@@ -1,7 +1,8 @@
 you-helper
 ==========
 
-video downloader helper
+merges dash video and audio
+forked from: http://www.youtube.com/watch?v=G7uztVbg7CQ
 
 
 First install youtube-dl
