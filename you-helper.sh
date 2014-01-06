@@ -11,7 +11,8 @@ Qual1=$2
 Qual2=$3
 
 if [ -z $URL ]; then
-  echo "Usage: bash you-helper.sh url 137 141"
+  echo "Usage: bash you-helper.sh url"
+  echo "   or: bash you-helper.sh url 137 140"
   exit
 fi
 
@@ -35,12 +36,12 @@ fi
 
 if [ -z $Qual2 ]; then
   echo
-  echo -n "Quality for Audio (default 141): "
+  echo -n "Quality for Audio (default 140): "
   read Qual2
 fi
 # Set values if user has just pressed Return without typing anything
-if [ -z $Qual1 ]; then
-  Qual2="141"
+if [ -z $Qual2 ]; then
+  Qual2="140"
 fi
 
 #Set filenames from output of youtube-dl
