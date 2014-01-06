@@ -2,8 +2,10 @@ you-helper
 ==========
 
 merges dash video and audio
-forked from: http://www.youtube.com/watch?v=G7uztVbg7CQ
-merge tip from: http://blog.nightlyart.com/130
+
+
+* forked from: http://www.youtube.com/watch?v=G7uztVbg7CQ
+* merge tip from: http://blog.nightlyart.com/130
 
 
 First install youtube-dl
