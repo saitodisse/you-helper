@@ -9,6 +9,7 @@ File2New=audio.m4a
 URL=$1
 Qual1=$2
 Qual2=$3
+OutputFormat="-o ""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
 
 if [ -z $URL ]; then
   echo "Usage: bash you-helper.sh url"
@@ -44,9 +45,10 @@ if [ -z $Qual2 ]; then
   Qual2="140"
 fi
 
+
 #Set filenames from output of youtube-dl
-File1=$(youtube-dl --get-filename -f $Qual1 $URL)
-File2=$(youtube-dl --get-filename -f $Qual2 $URL)
+File1=$(youtube-dl --get-filename -f $Qual1 "$OutputFormat" $URL)
+File2=$(youtube-dl --get-filename -f $Qual2 "$OutputFormat" $URL)
 echo $File1
 echo $File2
 
@@ -54,7 +56,7 @@ echo $File2
 echo
 echo "Getting Video!"
 echo
-youtube-dl -f $Qual1 $URL
+youtube-dl -f $Qual1 "$OutputFormat" $URL
 if [[ ! -f $File1 ]]; then
   echo
   echo "Error video file not downloaded"
@@ -65,12 +67,13 @@ fi
 echo
 echo "Getting Audio!"
 echo
-youtube-dl -f $Qual2 $URL
+youtube-dl -f $Qual2 "$OutputFormat" $URL
 if [[ ! -f $File2 ]]; then
   echo
   echo "Error audio file not downloaded"
   exit
 fi
+
 
 echo
 echo "Combining Audio and Video files with MP4Box"
@@ -78,23 +81,25 @@ echo "MP4Box -add" $File1 $File2
 echo
 MP4Box -add "$File2" "$File1"
 
+
+#Remove audio file
 if [[ -f "$File2" ]]; then
-  #Remove audio file
   echo
   echo "Remove audio file"
   echo
   rm "$File2"
 fi
 
+#create downloads folder
+mkdir -p downloads/
 
+#Back to original name
 if [[ -f out_"$File1" ]]; then
-  #Back to original name
   echo
   echo "Back to original name"
   echo "old name: " out_"$File1"
   echo "new name: " "$File1"
   echo
-  mv out_"$File1" "$File1"
+  mv out_"$File1" downloads/"$File1"
 fi
-
 
