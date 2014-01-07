@@ -2,14 +2,11 @@
 #Youtube-DL DASH Video and Audio merging script
 #Written by QuidsUp
 #Edited by Christoph Korn
-
-File1New=video.mp4
-File2New=audio.m4a
+#Edited by saitodisse
 
 URL=$1
-Qual1=$2
-Qual2=$3
-OutputFormat="-o ""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
+QualVideo=$2
+QualAudio=$3
 
 if [ -z $URL ]; then
   echo "Usage: bash you-helper.sh url"
@@ -18,46 +15,50 @@ if [ -z $URL ]; then
 fi
 
 #Find what quality of videos are available
-if [ -z $Qual1 -o -z $Qual2 ]; then
+if [ -z $QualVideo -o -z $QualAudio ]; then
   echo
   echo -n "Listing available videos sources"
   echo
   youtube-dl -F $URL
 fi
 
-if [ -z $Qual1 ]; then
+if [ -z $QualVideo ]; then
   echo
-  echo -n "Quality for Video (default 137): "
-  read Qual1
+  echo -n "Quality for Video (default 137/136): "
+  read QualVideo
 fi
 # Set values if user has just pressed Return without typing anything
-if [ -z $Qual1 ]; then
-  Qual1="137"
+if [ -z $QualVideo ]; then
+  QualVideo="137/136"
 fi
 
-if [ -z $Qual2 ]; then
+if [ -z $QualAudio ]; then
   echo
-  echo -n "Quality for Audio (default 140): "
-  read Qual2
+  echo -n "Quality for Audio (default 141/140/139): "
+  read QualAudio
 fi
 # Set values if user has just pressed Return without typing anything
-if [ -z $Qual2 ]; then
-  Qual2="140"
+if [ -z $QualAudio ]; then
+  QualAudio="141/140/139"
 fi
 
 
 #Set filenames from output of youtube-dl
-File1=$(youtube-dl --get-filename -f $Qual1 "$OutputFormat" $URL)
-File2=$(youtube-dl --get-filename -f $Qual2 "$OutputFormat" $URL)
-echo $File1
-echo $File2
+OutputShortFormat="-o %(id)s.%(ext)s"
+OutputLongFormat="-o ""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
+
+FileVideoLong=$(youtube-dl --get-filename -f $QualVideo "$OutputLongFormat" $URL)
+FileVideo=$(youtube-dl --get-filename -f $QualVideo "$OutputShortFormat" $URL)
+FileAudio=$(youtube-dl --get-filename -f $QualAudio "$OutputShortFormat" $URL)
+echo long name: $FileVideoLong
+echo video: $FileVideo, audio: $FileAudio
 
 #Download Video file with First Quality Setting
 echo
 echo "Getting Video!"
 echo
-youtube-dl -f $Qual1 "$OutputFormat" $URL
-if [[ ! -f $File1 ]]; then
+youtube-dl -f $QualVideo "$OutputShortFormat" $URL
+if [[ ! -f $FileVideo ]]; then
   echo
   echo "Error video file not downloaded"
   exit
@@ -67,8 +68,8 @@ fi
 echo
 echo "Getting Audio!"
 echo
-youtube-dl -f $Qual2 "$OutputFormat" $URL
-if [[ ! -f $File2 ]]; then
+youtube-dl -f $QualAudio "$OutputShortFormat" $URL
+if [[ ! -f $FileAudio ]]; then
   echo
   echo "Error audio file not downloaded"
   exit
@@ -77,29 +78,38 @@ fi
 
 echo
 echo "Combining Audio and Video files with MP4Box"
-echo "MP4Box -add" $File1 $File2
+echo "MP4Box -add" $FileVideo $FileAudio
 echo
-MP4Box -add "$File2" "$File1"
+MP4Box -add "$FileAudio" "$FileVideo"
 
 
 #Remove audio file
-if [[ -f "$File2" ]]; then
+if [[ -f "$FileAudio" ]]; then
   echo
   echo "Remove audio file"
   echo
-  rm "$File2"
+  rm "$FileAudio"
 fi
 
 #create downloads folder
 mkdir -p downloads/
 
-#Back to original name
-if [[ -f out_"$File1" ]]; then
+#Rename to original name
+if [[ -f out_"$FileVideo" ]]; then
   echo
-  echo "Back to original name"
-  echo "old name: " out_"$File1"
-  echo "new name: " "$File1"
+  echo "slice away ""out_"" from video name"
+  echo "old name: " out_"$FileVideo"
+  echo "new name: " "$FileVideo"
   echo
-  mv out_"$File1" downloads/"$File1"
+  mv out_"$FileVideo" "$FileVideo"
 fi
 
+#Rename to descriptive name
+if [[ -f "$FileVideo" ]]; then
+  echo
+  echo "Getting descriptive name and moving to downloads folder"
+  echo "old name: " "$FileVideo"
+  echo "new name: " "$FileVideoLong"
+  echo
+  mv "$FileVideo" downloads/"$FileVideoLong"
+fi
