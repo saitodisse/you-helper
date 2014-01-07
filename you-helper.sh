@@ -44,12 +44,16 @@ fi
 
 
 #Set filenames from output of youtube-dl
-OutputShortFormat="-o %(id)s.%(ext)s"
-OutputLongFormat="-o""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
 
-FileVideoLong=$(youtube-dl --get-filename -f $QualVideo "$OutputLongFormat" $URL)
-FileVideo=$(youtube-dl --get-filename -f $QualVideo "$OutputShortFormat" $URL)
-FileAudio=$(youtube-dl --get-filename -f $QualAudio "$OutputShortFormat" $URL)
+OutputLongName="-o""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
+FileVideoLong=$(youtube-dl --get-filename -f $QualVideo "$OutputLongName" $URL)
+
+OutputUploader="-o""%(uploader)s"""
+Uploader=$(youtube-dl --get-filename -f $QualVideo "$OutputUploader" $URL)
+
+OutputId="-o""%(id)s.%(ext)s"""
+FileVideo=$(youtube-dl --get-filename -f $QualVideo "$OutputId" $URL)
+FileAudio=$(youtube-dl --get-filename -f $QualAudio "$OutputId" $URL)
 echo long name: [$FileVideoLong]
 echo video: $FileVideo, audio: $FileAudio
 
@@ -57,7 +61,7 @@ echo video: $FileVideo, audio: $FileAudio
 echo
 echo "Getting Video!"
 echo
-youtube-dl -f $QualVideo "$OutputShortFormat" $URL
+youtube-dl -f $QualVideo "$OutputId" $URL
 if [[ ! -f $FileVideo ]]; then
   echo
   echo "Error video file not downloaded"
@@ -68,7 +72,7 @@ fi
 echo
 echo "Getting Audio!"
 echo
-youtube-dl -f $QualAudio "$OutputShortFormat" $URL
+youtube-dl -f $QualAudio "$OutputId" $URL
 if [[ ! -f $FileAudio ]]; then
   echo
   echo "Error audio file not downloaded"
@@ -92,7 +96,7 @@ if [[ -f "$FileAudio" ]]; then
 fi
 
 #create downloads folder
-mkdir -p downloads/
+mkdir -p downloads/"$Uploader"/
 
 #Rename to original name
 if [[ -f out_"$FileVideo" ]]; then
@@ -111,5 +115,5 @@ if [[ -f "$FileVideo" ]]; then
   echo "old name: " "$FileVideo"
   echo "new name: " "$FileVideoLong"
   echo
-  mv "$FileVideo" downloads/"$FileVideoLong"
+  mv "$FileVideo" downloads/"$Uploader"/"$FileVideoLong"
 fi
