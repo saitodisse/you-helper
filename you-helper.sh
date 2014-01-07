@@ -45,12 +45,12 @@ fi
 
 #Set filenames from output of youtube-dl
 OutputShortFormat="-o %(id)s.%(ext)s"
-OutputLongFormat="-o ""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
+OutputLongFormat="-o""%(uploader)s - %(title)s [%(id)s, %(format)s].%(ext)s"""
 
 FileVideoLong=$(youtube-dl --get-filename -f $QualVideo "$OutputLongFormat" $URL)
 FileVideo=$(youtube-dl --get-filename -f $QualVideo "$OutputShortFormat" $URL)
 FileAudio=$(youtube-dl --get-filename -f $QualAudio "$OutputShortFormat" $URL)
-echo long name: $FileVideoLong
+echo long name: [$FileVideoLong]
 echo video: $FileVideo, audio: $FileAudio
 
 #Download Video file with First Quality Setting
